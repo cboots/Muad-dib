@@ -4,3 +4,6 @@
 /build.ninja
 
 *.pyc
+
+/.ninja_deps
+/.ninja_log
