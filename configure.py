@@ -60,13 +60,21 @@ def main():
     
     ninja_writer = ninja.Writer(open(BUILD_FILENAME, 'w'))
     n = ninja_writer
-
+    n.variable('builddir','build')
     try:
         configs = collect_configs(path='src')
-        
+        n.rule('config', 
+               command='python ' + os.path.join('tools','convert_config.py') + ' $out $in',
+               description='CFG $out')
         for config in configs:
-            print(config)
-            
+            basename = os.path.basename(config)
+            directory = os.path.dirname(config)
+            input_files = []            
+            while os.path.exists(os.path.join(directory, basename)):
+                input_files.append(os.path.join(directory, basename))
+                directory = os.path.dirname(directory)
+
+            n.build(builddir(os.path.splitext(config)[0] + '.h'), rule='config', inputs=input_files)
     finally:
         n.close()
     

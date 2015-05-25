@@ -57,31 +57,26 @@ def write_config_header(outFile, config_prefix, parameters):
                 write_macro(f, config_prefix, param, parameters[param])
             
     
-def convert_config(inFile, outFile, defaultDirs=None):
+def convert_config(outFile, inFiles):
     
-    inFileName = os.path.basename(inFile)
+    inFileName = os.path.basename(inFiles[0])
 
     parameters = OrderedDict()  
     
-    if defaultDirs is not None:
-        for directory in defaultDirs:
-            defaultConfig = os.path.join(directory,inFileName)
-            if os.path.exists(defaultConfig):
-                parameters.update(parse_config(defaultConfig))
-    
-    parameters.update(parse_config(inFile))
+    for inFile in reversed(inFiles):
+        if os.path.exists(inFile):
+            parameters.update(parse_config(inFile))
 
-    basename = os.path.basename(inFile)
-    write_config_header(outFile, basename.upper().replace('.','_'), parameters)
+
+    write_config_header(outFile, inFileName.upper().replace('.','_'), parameters)
     
 
 
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 3:
-        convert_config(sys.argv[1], sys.argv[2])
-    elif len(sys.argv) >= 4:
-        convert_config(sys.argv[1], sys.argv[2], sys.argv[3:])
+    print(sys.argv)
+    if len(sys.argv) >= 3:
+        convert_config(sys.argv[1], sys.argv[2:])
     else:
         print('Invalid Number Of Arguments')
